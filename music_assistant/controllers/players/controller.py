@@ -2959,6 +2959,10 @@ class PlayerController(ProtocolLinkingMixin, CoreController):
         # in that case we need to stop the player first
         prev_source = player.state.active_source
         if prev_source and source != prev_source:
+            # clear in_use_by on any previously active plugin source
+            # so the UI correctly reflects the new active source
+            if prev_plugin_source := self.get_plugin_source(prev_source):
+                prev_plugin_source.in_use_by = None
             with suppress(PlayerCommandFailed, RuntimeError):
                 # just try to stop (regardless of state)
                 await self._handle_cmd_stop(player_id)

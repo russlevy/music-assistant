@@ -1771,6 +1771,16 @@ class Player(ABC):
                 for feature in protocol_player.supported_features:
                     if feature in PROTOCOL_FEATURES:
                         base_features.add(feature)
+        # Add features from active plugin source capabilities (e.g. Spotify Connect)
+        for plugin_source in self.mass.players.get_plugin_sources():
+            if plugin_source.in_use_by == self.player_id:
+                if plugin_source.can_next_previous:
+                    base_features.add(PlayerFeature.NEXT_PREVIOUS)
+                if plugin_source.can_seek:
+                    base_features.add(PlayerFeature.SEEK)
+                if plugin_source.can_play_pause:
+                    base_features.add(PlayerFeature.PAUSE)
+                break
         return base_features
 
     @cached_property
